@@ -1,24 +1,47 @@
+import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
-import { usePage } from "./PageContext";
+import { Link } from "react-router-dom";
 
 /** Navbar with site navigation links */
 export default function Navbar() {
   const { token, logout } = useAuth();
-  const { setPage } = usePage();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header>
       <p>Fitness Trackr</p>
-      <nav>
-        <a onClick={() => setPage("activities")}>Activities</a>
-        {token ? (
-          <a onClick={() => logout()}>Log out</a>
-        ) : (
-          <>
-            <a onClick={() => setPage("register")}>Register</a>
-            <a onClick={() => setPage("login")}>Login</a>
-          </>
-        )}
-      </nav>
+      {/* Hamburger button */}
+      <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+        ☰
+      </button>
+
+      {/* Only show nav if menu is open */}
+      {menuOpen && (
+        <nav>
+          <Link to="/activities" onClick={() => setMenuOpen(false)}>
+            Activities
+          </Link>
+          {token ? (
+            <button
+              onClick={() => {
+                logout();
+                setMenuOpen(false);
+              }}
+            >
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link to="/register" onClick={() => setMenuOpen(false)}>
+                Register
+              </Link>
+              <Link to="/login" onClick={() => setMenuOpen(false)}>
+                Login
+              </Link>
+            </>
+          )}
+        </nav>
+      )}
     </header>
   );
 }
